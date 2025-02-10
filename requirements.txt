@@ -1,0 +1,15 @@
+streamlit
+pandas
+requests
+openpyxl
+scikit-learn
+```
+````
+
+After creating the `requirements.txt` file, you can install all the dependencies by running:
+
+```sh
+pip install -r /Users/roby/Documents/Programs/Project-1/requirements.txt
+```
+
+This should resolve the `ModuleNotFoundError` and ensure that all necessary libraries are installed.

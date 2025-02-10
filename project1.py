@@ -47,6 +47,13 @@ if df is not None:
         csv = df.to_csv(index=False).encode("utf-8")
         st.download_button("Download Categorized Data", data=csv, file_name="categorized_books.csv", mime="text/csv")
 
+        # Display top 5 books in each category
+        st.write("### Top 5 Books in Each Category:")
+        for category in range(num_clusters):
+            st.write(f"#### Category {category}")
+            top_books = df[df["Category"] == category].head(5)
+            st.write(top_books[["Title", "Description"]])
+
     else:
         st.error("The dataset must contain a 'Description' column.")
 
