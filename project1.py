@@ -108,7 +108,10 @@ if df is not None:
         for category in range(num_clusters):
             st.write(f"#### Category {category}")
             top_books = df[df["Category"] == category].head(5)
-            st.write(top_books[["Title", "Description"]])
+            if "Title" in df.columns:
+                st.write(top_books[["Title", "Description"]])
+            else:
+                st.write(top_books[["Description"]])
 
     else:
         st.error("The dataset must contain a 'Description' column.")
