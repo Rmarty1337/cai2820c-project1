@@ -34,7 +34,13 @@ except ImportError:
 
 try:
     from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.cluster import KMeans
+    from sklearn.decomposition import NMF
     print("Scikit-learn is installed correctly.")
 except ImportError:
     print("Scikit-learn is not installed.")
+
+try:
+    import nltk
+    print("NLTK is installed correctly.")
+except ImportError:
+    print("NLTK is not installed.")
