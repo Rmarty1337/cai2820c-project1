@@ -3,63 +3,14 @@ import pandas as pd
 import requests
 from io import BytesIO
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.cluster import KMeans
-import subprocess
+from sklearn.decomposition import NMF
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import nltk
 
-# Function to update a package
-def update_package(package_name):
-    try:
-        subprocess.check_call(["pip", "install", "--upgrade", package_name])
-        st.write(f"{package_name} is updated successfully.")
-    except Exception as e:
-        st.write(f"Error updating {package_name}: {e}")
-
-# Update pip first
-update_package("pip")
-
-# Update and verify installations
-packages = ["streamlit", "pandas", "requests", "openpyxl", "scikit-learn"]
-for package in packages:
-    update_package(package)
-
-# Check pip version
-try:
-    pip_version = subprocess.check_output(["pip", "--version"]).decode("utf-8").strip()
-    st.write(f"pip version: {pip_version}")
-except Exception as e:
-    st.write(f"Error checking pip version: {e}")
-
-# Verify installations
-try:
-    import streamlit as st
-    st.write("Streamlit is installed correctly.")
-except ImportError:
-    st.write("Streamlit is not installed.")
-
-try:
-    import pandas as pd
-    st.write("Pandas is installed correctly.")
-except ImportError:
-    st.write("Pandas is not installed.")
-
-try:
-    import requests
-    st.write("Requests is installed correctly.")
-except ImportError:
-    st.write("Requests is not installed.")
-
-try:
-    import openpyxl
-    st.write("Openpyxl is installed correctly.")
-except ImportError:
-    st.write("Openpyxl is not installed.")
-
-try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.cluster import KMeans
-    st.write("Scikit-learn is installed correctly.")
-except ImportError:
-    st.write("Scikit-learn is not installed.")
+# Ensure necessary NLTK data is downloaded
+nltk.download('punkt')
+nltk.download('stopwords')
 
 # GitHub raw file URL
 GITHUB_FILE_URL = "https://github.com/Rmarty1337/cai2820c-project1/raw/refs/heads/main/AllITBooks_DataSet.xlsx"
@@ -84,20 +35,59 @@ if df is not None:
     st.write(df.head())
 
     if "Description" in df.columns:
-        # Convert text descriptions into TF-IDF features
-        vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
-        X = vectorizer.fit_transform(df["Description"].astype(str))
+        # Combine relevant text columns
+        df["ConsolidatedText"] = df["Title"] + " " + df["Sub_title"] + " " + df["Description"]
 
-        # Apply K-Means clustering
-        num_clusters = 5  # Adjust as needed
-        kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
-        df["Category"] = kmeans.fit_predict(X)
+        # Define stop words
+        stop_words = set(stopwords.words('english'))
+
+        # Function to preprocess text
+        def preprocess_text(text):
+            text = str(text).lower()
+            tokens = word_tokenize(text)
+            filtered_tokens = [word for word in tokens if word.isalnum() and word not in stop_words]
+            return " ".join(filtered_tokens)
+
+        # Apply preprocessing
+        df["CleanedDescription"] = df["ConsolidatedText"].apply(preprocess_text)
+
+        # Convert text descriptions into TF-IDF features
+        vectorizer = TfidfVectorizer(max_features=500)
+        tfidf_matrix = vectorizer.fit_transform(df["CleanedDescription"])
+
+        # Apply NMF for topic modeling
+        nmf_model = NMF(n_components=10, random_state=42)
+        nmf_model.fit(tfidf_matrix)
+
+        # Get topics
+        feature_names = vectorizer.get_feature_names_out()
+        topics = []
+        for topic_idx, topic in enumerate(nmf_model.components_):
+            top_words = [feature_names[i] for i in topic.argsort()[:-11:-1]]
+            topics.append(", ".join(top_words))
+
+        # Assign topics to documents
+        topic_assignments = nmf_model.transform(tfidf_matrix).argmax(axis=1)
+        df["AssignedTopic"] = topic_assignments
+        df["Topic_Keywords"] = [topics[i] for i in topic_assignments]
+
+        # Define topic categories
+        categories = {
+            0: "Content Management Systems (CMS)",
+            1: "Web Development and Frameworks",
+            2: "Data Analysis and Big Data",
+            3: "Game Development",
+            4: "Network and Security Administration",
+            5: "Programming Languages and Functional Programming",
+            6: "Mobile App Development",
+            7: "Java and Enterprise Applications",
+            8: "Python and Machine Learning",
+            9: "Databases and SQL Administration"
+        }
+        df["Topic"] = df["AssignedTopic"].map(categories)
 
         st.write("### Categorized Books:")
-        if "Title" in df.columns:
-            st.write(df[["Title", "Category"]])
-        else:
-            st.write(df[["Category"]])
+        st.write(df[["Title", "Category", "Topic", "Topic_Keywords"]])
 
         # Allow downloading of categorized file
         csv = df.to_csv(index=False).encode("utf-8")
@@ -105,13 +95,10 @@ if df is not None:
 
         # Display top 5 books in each category
         st.write("### Top 5 Books in Each Category:")
-        for category in range(num_clusters):
-            st.write(f"#### Category {category}")
-            top_books = df[df["Category"] == category].head(5)
-            if "Title" in df.columns:
-                st.write(top_books[["Title", "Description"]])
-            else:
-                st.write(top_books[["Description"]])
+        for category in range(10):
+            st.write(f"#### Category {category}: {categories[category]}")
+            top_books = df[df["AssignedTopic"] == category].head(5)
+            st.write(top_books[["Title", "Description"]])
 
     else:
         st.error("The dataset must contain a 'Description' column.")
