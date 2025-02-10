@@ -3,3 +3,4 @@ pandas
 requests
 openpyxl
 scikit-learn
+nltk
