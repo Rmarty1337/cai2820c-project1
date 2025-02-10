@@ -5,12 +5,7 @@ from io import BytesIO
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import NMF
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-import nltk
-
-# Ensure necessary NLTK data is downloaded
-nltk.download('punkt')
-nltk.download('stopwords')
+import re
 
 # GitHub raw file URL
 GITHUB_FILE_URL = "https://github.com/Rmarty1337/cai2820c-project1/raw/refs/heads/main/AllITBooks_DataSet.xlsx"
@@ -18,13 +13,12 @@ GITHUB_FILE_URL = "https://github.com/Rmarty1337/cai2820c-project1/raw/refs/head
 @st.cache_data
 def load_data(url):
     """Download and load dataset from GitHub."""
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
+    response = requests.get(url)
+    if response.status_code == 200:
         df = pd.read_excel(BytesIO(response.content), engine="openpyxl")
         return df
-    except Exception as e:
-        st.error(f"Failed to load dataset: {e}")
+    else:
+        st.error("Failed to load dataset. Check your GitHub URL.")
         return None
 
 df = load_data(GITHUB_FILE_URL)
@@ -35,8 +29,8 @@ stop_words = set(stopwords.words('english'))
 # Function to preprocess text
 def preprocess_text(text):
     text = str(text).lower()
-    tokens = word_tokenize(text)
-    filtered_tokens = [word for word in tokens if word.isalnum() and word not in stop_words]
+    tokens = re.findall(r'\b\w+\b', text)
+    filtered_tokens = [word for word in tokens if word not in stop_words]
     return " ".join(filtered_tokens)
 
 # Main Streamlit app
