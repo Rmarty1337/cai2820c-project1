@@ -6,6 +6,19 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 import subprocess
 
+# Function to update a package
+def update_package(package_name):
+    try:
+        subprocess.check_call(["pip", "install", "--upgrade", package_name])
+        st.write(f"{package_name} is updated successfully.")
+    except Exception as e:
+        st.write(f"Error updating {package_name}: {e}")
+
+# Update and verify installations
+packages = ["pip", "streamlit", "pandas", "requests", "openpyxl", "scikit-learn"]
+for package in packages:
+    update_package(package)
+
 # Check pip version
 try:
     pip_version = subprocess.check_output(["pip", "--version"]).decode("utf-8").strip()
