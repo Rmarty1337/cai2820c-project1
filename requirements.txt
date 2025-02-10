@@ -13,3 +13,15 @@ pip install -r /Users/roby/Documents/Programs/Project-1/requirements.txt
 ```
 
 This should resolve the `ModuleNotFoundError` and ensure that all necessary libraries are installed.
+
+To resolve the error during the installation of requirements, you should check the terminal for specific error messages. However, I can suggest a few common troubleshooting steps:
+
+1. **Ensure you have the correct Python version**: Some libraries may require a specific version of Python. Make sure you are using a compatible version.
+
+2. **Check for typos in `requirements.txt`**: Ensure that all package names are spelled correctly.
+
+3. **Install dependencies individually**: Try installing each dependency one by one to identify which one is causing the issue.
+
+If you encounter an error, please provide the specific error message from the terminal for further assistance.
+
+To summarize, the `requirements.txt` file ensures that all the required libraries are installed in the environment where your Streamlit app runs. This helps prevent `ModuleNotFoundError` and other dependency-related issues.
