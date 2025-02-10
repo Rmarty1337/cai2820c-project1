@@ -14,8 +14,11 @@ def update_package(package_name):
     except Exception as e:
         st.write(f"Error updating {package_name}: {e}")
 
+# Update pip first
+update_package("pip")
+
 # Update and verify installations
-packages = ["pip", "streamlit", "pandas", "requests", "openpyxl", "scikit-learn"]
+packages = ["streamlit", "pandas", "requests", "openpyxl", "scikit-learn"]
 for package in packages:
     update_package(package)
 
