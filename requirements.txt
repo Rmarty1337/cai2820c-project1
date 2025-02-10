@@ -6,13 +6,13 @@ scikit-learn
 ```
 ````
 
-After creating the `requirements.txt` file, you can install all the dependencies by running:
+After correcting the `requirements.txt` file, you can install all the dependencies by running:
 
 ```sh
 pip install -r /Users/roby/Documents/Programs/Project-1/requirements.txt
 ```
 
-This should resolve the `ModuleNotFoundError` and ensure that all necessary libraries are installed.
+This should resolve the `Invalid requirement: '```'` error and ensure that all necessary libraries are installed correctly.
 
 To resolve the error during the installation of requirements, you should check the terminal for specific error messages. However, I can suggest a few common troubleshooting steps:
 
