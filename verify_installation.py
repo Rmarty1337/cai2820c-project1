@@ -1,3 +1,13 @@
+import subprocess
+
+# Check pip version
+try:
+    pip_version = subprocess.check_output(["pip", "--version"]).decode("utf-8").strip()
+    print(f"pip version: {pip_version}")
+except Exception as e:
+    print(f"Error checking pip version: {e}")
+
+# Verify installations
 try:
     import streamlit as st
     print("Streamlit is installed correctly.")

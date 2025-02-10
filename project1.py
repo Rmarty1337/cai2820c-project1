@@ -4,6 +4,46 @@ import requests
 from io import BytesIO
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
+import subprocess
+
+# Check pip version
+try:
+    pip_version = subprocess.check_output(["pip", "--version"]).decode("utf-8").strip()
+    st.write(f"pip version: {pip_version}")
+except Exception as e:
+    st.write(f"Error checking pip version: {e}")
+
+# Verify installations
+try:
+    import streamlit as st
+    st.write("Streamlit is installed correctly.")
+except ImportError:
+    st.write("Streamlit is not installed.")
+
+try:
+    import pandas as pd
+    st.write("Pandas is installed correctly.")
+except ImportError:
+    st.write("Pandas is not installed.")
+
+try:
+    import requests
+    st.write("Requests is installed correctly.")
+except ImportError:
+    st.write("Requests is not installed.")
+
+try:
+    import openpyxl
+    st.write("Openpyxl is installed correctly.")
+except ImportError:
+    st.write("Openpyxl is not installed.")
+
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.cluster import KMeans
+    st.write("Scikit-learn is installed correctly.")
+except ImportError:
+    st.write("Scikit-learn is not installed.")
 
 # GitHub raw file URL
 GITHUB_FILE_URL = "https://github.com/Rmarty1337/cai2820c-project1/raw/refs/heads/main/AllITBooks_DataSet.xlsx"
