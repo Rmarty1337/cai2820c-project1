@@ -47,7 +47,7 @@ if df is not None:
             def preprocess_text(text):
                 text = str(text).lower()
                 tokens = word_tokenize(text)
-                filtered_tokens = [word for word in tokens if word isalnum() and word not in stop_words]
+                filtered_tokens = [word for word in tokens if word.isalnum() and word not in stop_words]
                 return " ".join(filtered_tokens)
 
             # Apply preprocessing
